@@ -1,6 +1,7 @@
 package com.alex.springboot.app.controllers;
 
 import com.alex.springboot.app.models.entity.Cliente;
+import com.alex.springboot.app.models.entity.ItemFactura;
 import com.alex.springboot.app.models.services.IClienteService;
 import com.alex.springboot.app.models.services.IUploadFileService;
 import com.alex.springboot.app.util.paginator.PageRender;
@@ -19,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.WebDataBinder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
@@ -35,6 +37,7 @@ import java.util.Map;
 import java.util.UUID;
 
 @Controller
+@SessionAttributes("cliente")
 public class ClienteController {
     /*@Autowired
     @Qualifier("ClienteDaoImplement")
@@ -102,13 +105,11 @@ public class ClienteController {
             iClienteService.delete(id);
             redirect.addFlashAttribute("warning", "El usuario ha sido eliminado");
             //Eliminando la foto
-
                 if (fileService.deleteFile(cliente.getFoto())) {
                     redirect.addFlashAttribute("info", "Foto "+cliente.getFoto()+" eliminada con exito");
                 }
-
         }else{
-            redirect.addFlashAttribute("error", "El usario que quiere eliminar no existe en la BD");
+            redirect.addFlashAttribute("error", "El usuario que quiere eliminar no existe en la BD");
         }
         return "redirect:/listar";
     }
@@ -118,7 +119,7 @@ public class ClienteController {
      **/
     @RequestMapping(value = "/form", method = RequestMethod.POST) /*Aca si falla la validacion la url se cambia al path del post*/
     public String guardar(@Valid @ModelAttribute("cliente") Cliente cliente, BindingResult result,
-                          @RequestParam("file") MultipartFile foto, Model model, RedirectAttributes redirect) {
+                          @RequestParam("file") MultipartFile foto, Model model, RedirectAttributes redirect, SessionStatus status) {
         System.out.print("---"+"ID: " +cliente.getId());
         if (result.hasErrors()) {   /** Si cliente.getId() es != null es porque es un crear clientes sino es un editar Clientes ya que al crear el cliente no tiene id ya que el id se generea al hacer persist  **/
             String titulo = cliente.getId() != null ? "Editar Cliente" : "Formulario de Clientes ";
@@ -130,12 +131,9 @@ public class ClienteController {
         System.out.println(" Param ... FILE:"+foto.isEmpty());
         if (!foto.isEmpty()) {
             System.out.println("-------!foto.isEmpty()-------");
+            //Este if me sirve para saber si estoy haciendo un editar ya que el cliente ya tiene id y foto creada
             if(cliente.getId()!=null && cliente.getFoto()!=null && cliente.getFoto().length()>0){
-                Path rootPath = Paths.get("uploads").resolve(cliente.getFoto()).toAbsolutePath();
-                File archivo = rootPath.toFile();
-                if (archivo.exists() && archivo.canRead()) {
-                    archivo.delete();
-                }
+                fileService.deleteFile(cliente.getFoto());
             }
             //Path directorioResource = Paths.get("src//main//resources//static//upload");
             //String rootPath = directorioResource.toFile().getAbsolutePath();
@@ -157,10 +155,8 @@ public class ClienteController {
             } catch (Exception e) {
                 System.out.println(e);
             }
-        }else{//este else sirve para borrar
-            Path rootPath = Paths.get("uploads").resolve(cliente.getFoto()).toAbsolutePath();
-            File archivo = rootPath.toFile();
-            if (archivo.exists() && archivo.canRead()) { archivo.delete();}
+        }else{//este else sirve para borrar la foto si no se coloca en el formulario
+            fileService.deleteFile(cliente.getFoto());
             cliente.setFoto("");
         }
         System.out.println("FOTO after validation: " + cliente.getFoto());
@@ -168,6 +164,7 @@ public class ClienteController {
         System.out.println("pre-save: " + cliente.getId());
         iClienteService.save(cliente);
         System.out.println("save: " + cliente.getId());
+        status.setComplete(); //aca se elimina de la sesion el cliente ya que se persistio en la bd
         redirect.addFlashAttribute("prueba", "Atributo Redirect Test");
         redirect.addFlashAttribute("success", msgFlash);
 
@@ -184,6 +181,10 @@ public class ClienteController {
             return "redirect:/listar";
         }
         model.put("cliente", cliente);
+        System.out.println(cliente.getFacturas().get(0).getItems());
+        for(ItemFactura lol : cliente.getFacturas().get(0).getItems()){
+            System.out.println(lol.getId());
+        }
         model.put("titulo", "Detalle Cliente" + cliente.getNombre());
         return "ver";
     }
