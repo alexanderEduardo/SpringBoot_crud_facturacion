@@ -1,14 +1,15 @@
 package com.alex.springboot.app.models.entity;
 
 import org.springframework.format.annotation.DateTimeFormat;
-
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import javax.validation.constraints.*;
 
-@Entity
-@Table(name = "clientes")
+
+@Entity @Table(name = "clientes")
 public class Cliente implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -27,10 +28,16 @@ public class Cliente implements Serializable {
 
     @NotEmpty @Email
     private String email;
-
+    //El ONE hace referencia a cliente , es decir , un cliente puede tener muchas Facturas!
+    @OneToMany(mappedBy = "cliente",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
+    private List<Factura> facturas;
     private String foto;
 
-   // @PrePersist          //antes de que se guarde en la bd
+    public Cliente() {
+        facturas=new ArrayList<>();
+    }
+
+    // @PrePersist          //antes de que se guarde en la bd
     public void prePersist(){
         createAt=new Date();
     }
@@ -81,5 +88,21 @@ public class Cliente implements Serializable {
 
     public void setFoto(String foto) {
         this.foto = foto;
+    }
+
+    public void addFactura(Factura factura){
+        facturas.add(factura);
+    }
+    public List<Factura> getFacturas() {
+        return facturas;
+    }
+
+    public void setFacturas(List<Factura> facturas) {
+        this.facturas = facturas;
+    }
+
+    @Override
+    public String toString() {
+        return nombre + " " + apellido;
     }
 }
