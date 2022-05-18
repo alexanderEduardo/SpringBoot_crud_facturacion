@@ -16,8 +16,10 @@
     <form th:action="@{/form}" th:object="${cliente}" th:method="POST" enctype="multipart/form-data">
         <!--Este hidden sirve a la hora de editar un cliente ya que al envbiar el objeto de
          nuevo para editar y no tener el campo id se marca como null-->
-        <input type="hidden" th:field="*{id}" />
-        <input type="hidden" th:field="*{foto}"/>
+        <!--<input type="hidden" th:field="*{id}"/>-->
+        <!--<input type="hidden" th:field="*{foto}"/>-->
+        <!--Estos 2 input:hidden ya no harian falta ya que ahora esta implementado el SessionAtributes("cliente")
+        Esto hace que se persistan los datos del cliente atraves de las request como el id y foto-->
         <div class="form-group row">
             <label class="col-sm-2 col-form-label">Nombre</label>
             <div class="col-sm-6">
