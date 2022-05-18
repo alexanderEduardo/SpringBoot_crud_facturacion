@@ -174,18 +174,22 @@ public class ClienteController {
      **/
     @GetMapping(value = "/ver/{id}")
     public String ver(@PathVariable Long id, Map<String, Object> model, RedirectAttributes flash) {
-        Cliente cliente = iClienteService.findOne(id);
+        /*{ cliente.id }*/
+        System.out.println("STARTING findCliente-----");
+        Cliente cliente =iClienteService.fetchByIdWithFacturas(id);
+        //Cliente cliente = iClienteService.findOne(id);
+        System.out.println("ENDIND findCliente----");
         if (cliente == null) {
             flash.addFlashAttribute("error", "El cliente no existe en la BD");
             return "redirect:/listar";
         }
         model.put("cliente", cliente);
-        if(!cliente.getFacturas().isEmpty()){
+        /*if(!cliente.getFacturas().isEmpty()){
             System.out.println(cliente.getFacturas().get(0).getItems());
             for(ItemFactura lol : cliente.getFacturas().get(0).getItems()){
                 System.out.println(lol.getProducto().getNombre());
             }
-        }
+        }*/
         model.put("titulo", "Detalle Cliente" + cliente.getNombre());
         return "ver";
     }
