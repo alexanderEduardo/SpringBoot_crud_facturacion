@@ -4,7 +4,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 
 //tiene una relacion unidereccional con "productos"
-@Entity @Table(name = "facturas_item")
+@Entity @Table(name = "facturas_items")
 public class ItemFactura implements Serializable {
     @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -32,5 +32,21 @@ public class ItemFactura implements Serializable {
     public void setCantidad(Integer cantidad) {
         this.cantidad = cantidad;
     }
+    public Producto getProducto() {
+        return producto;
+    }
+    public void setProducto(Producto producto) {
+        this.producto = producto;
+    }
+
+    @Override
+    public String toString() {
+        return "ItemFactura{" +
+                "id=" + id +
+                ", cantidad=" + cantidad +
+                ", producto=" + producto.getNombre() +
+                '}';
+    }
+
     private static final long serialVersionUID=1L;
 }
