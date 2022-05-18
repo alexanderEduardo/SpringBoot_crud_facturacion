@@ -39,16 +39,20 @@ public class ClienteServiceCrudRepositoryImplements implements IClienteService{
 
     @Override @Transactional(readOnly = true)
     public Cliente findOne(Long id) {
-
         return iClienteDaoCrudRepo.findById(id).orElse(null);
     }
 
-    @Override @Transactional()
+    @Override @Transactional(readOnly = true)
+    public Cliente fetchByIdWithFacturas(Long id) {
+        return iClienteDaoCrudRepo.fetchByIdWithFacturas(id);
+    }
+
+    @Override @Transactional
     public void delete(Long id) {
         iClienteDaoCrudRepo.deleteById(id);
     }
 
-    @Override
+    @Override  @Transactional(readOnly = true)
     public List<Producto> findByNombre(String term) {
         return productoDao.findByNombre(term);
     }
@@ -74,6 +78,11 @@ public class ClienteServiceCrudRepositoryImplements implements IClienteService{
     @Override
     public void deleteFactura(Long id) {
         facturaDao.deleteById(id);
+    }
+
+    @Override
+    public Factura fetchByIdWithClienteWithItemFacturaWithProducto(Long id) {
+        return facturaDao.fetchByIdWithClienteWithItemFacturaWithProducto(id);
     }
 
     /*@Override*/
