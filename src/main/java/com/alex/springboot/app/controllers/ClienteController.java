@@ -9,7 +9,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.core.io.Resource;
-import org.springframework.core.io.UrlResource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -181,13 +180,17 @@ public class ClienteController {
             return "redirect:/listar";
         }
         model.put("cliente", cliente);
-        System.out.println(cliente.getFacturas().get(0).getItems());
-        for(ItemFactura lol : cliente.getFacturas().get(0).getItems()){
-            System.out.println(lol.getId());
+        if(!cliente.getFacturas().isEmpty()){
+            System.out.println(cliente.getFacturas().get(0).getItems());
+            for(ItemFactura lol : cliente.getFacturas().get(0).getItems()){
+                System.out.println(lol.getProducto().getNombre());
+            }
         }
         model.put("titulo", "Detalle Cliente" + cliente.getNombre());
         return "ver";
     }
+
+
 
     /**
      * Otro metodo de obtener imagenes , el /upload/ hace referencia al src del img en el ver
@@ -218,6 +221,7 @@ public class ClienteController {
                         "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+
 }
 
 
