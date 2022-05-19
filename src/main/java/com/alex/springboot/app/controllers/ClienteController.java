@@ -46,7 +46,7 @@ public class ClienteController {
     private IClienteService iClienteService;
     @Autowired
     IUploadFileService fileService;
-    @RequestMapping(value = "/listar", method = RequestMethod.GET)
+    @RequestMapping(value = {"/listar","/"}, method = RequestMethod.GET)
     public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model, HttpServletResponse redirect, RedirectAttributes redirectAttributes) {
         Pageable pageRequest = PageRequest.of(page, 4); //(pag-actual , sizexpag)
         Page<Cliente> clientesPage = iClienteService.findAll(pageRequest); //en el find old carga el page con la bd

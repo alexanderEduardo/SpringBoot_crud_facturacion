@@ -12,6 +12,6 @@ public interface IClienteDao_CrudRepository extends PagingAndSortingRepository<C
             "UPDATE clientes SET id = @num := (@num+1);" +
             "ALTER TABLE clientes AUTO_INCREMENT =1")
     public void auto_increment();*/
-    @Query("select c FROM Cliente c join fetch c.facturas f where c.id=?1")
+    @Query("select c FROM Cliente c left join fetch c.facturas f where c.id=?1")
      Cliente fetchByIdWithFacturas(Long id);
 }
