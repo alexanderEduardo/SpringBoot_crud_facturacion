@@ -166,7 +166,6 @@ public class ClienteController {
         status.setComplete(); //aca se elimina de la sesion el cliente ya que se persistio en la bd
         redirect.addFlashAttribute("prueba", "Atributo Redirect Test");
         redirect.addFlashAttribute("success", msgFlash);
-
         return "redirect:listar";
     }
     /**

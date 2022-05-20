@@ -43,9 +43,11 @@ public class SpringSecurityConfig  extends WebSecurityConfigurerAdapter{
                 .antMatchers("/factura/**").hasAnyRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
-                    .formLogin()/*.loginPage("/login")*/
+                    .formLogin().loginPage("/login")
                     .permitAll()
                 .and()
-                .logout().permitAll();
+                .logout().permitAll()
+                .and()
+                .exceptionHandling().accessDeniedPage("/error_403");
     }
 }

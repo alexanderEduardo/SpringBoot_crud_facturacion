@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<html lang="en" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <head th:fragment="head">
     <meta charset="UTF-8">
     <title th:text="'Spring Boot: MVC + Thymeleaf + Data JPA - '+ ${titulo}"></title>
@@ -30,6 +30,21 @@
                 <a class="nav-link" href="/images/db_spring_facturas.png">DB-Mysql</a>
             </li>
         </ul>
+        <ul  class="navbar-nav navbar-right">
+            <li sec:authorize="!isAuthenticated()"><a class="btn btn-outline-primary" th:href="@{/login}">Sign In</a></li>
+            <li sec:authorize="isAuthenticated()" class="dropdown show">
+                <a class="btn btn-outline-primary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span sec:authentication="name"></span>
+                </a>
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <!--<a class="dropdown-item" href="#">Action</a>-->
+                    <form th:action="@{/logout}" id="logOutForm" method="POST">
+                        <button class="dropdown-item" type="submit" >Sign Out</button>
+                        <input type="hidden" th:name="${_csrf.parameterName}" th:value="${_csrf.token}">
+                    </form> <!--onclick="document.getElementById('logOutForm').submit();"-->
+                </div>
+            </li>
+        </ul>
     </div>
 </nav>
     <div class="alert alert-success" th:if="${success!=null}" th:text="${success}"></div>
@@ -42,6 +57,10 @@
 <footer th:fragment="footer" class="container">
     <hr>
     <img th:src="@{/images/springLogo2.png}" alt="Spring Logo" width="205px"/>
+    <p sec:authorize="isAuthenticated()"> <!--Solo si esta logeado muestra estos datos-->
+        Usuario Logeado : <span sec:authentication="name"></span>
+        | Roles : <span sec:authentication="principal.authorities"></span>
+    </p>
     <p>
         Powered by <a href="https://proyects.spring.io/spring-boot/">Spring Boot</a> y
         <a href="https://www.thymeleaf.org">Thymeleaf</a>
