@@ -16,6 +16,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.annotation.Secured;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -107,6 +108,7 @@ public class ClienteController {
         binder.registerCustomEditor(Date.class, "createAt", new CustomDateEditor(dateFormat, false));
     }
 
+    @Secured("ROLE_ADMIN")
     @GetMapping("/form")
     public String crear(Map<String, Object> model) {
         Cliente cliente = new Cliente();
@@ -118,6 +120,7 @@ public class ClienteController {
     /**
      * Este metodo es para Editar
      **/
+    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/form/{id}")
     public String editar(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes redirect) {
         Cliente cliente = null;
@@ -133,6 +136,7 @@ public class ClienteController {
         return "form"; /* retorna al formulario html con el objeto cargado y rellena los inputs */
     }
 
+    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/eliminar/{id}")
     public String delete(@PathVariable("id") Long id, RedirectAttributes redirect) {
         Cliente cliente = null;
@@ -153,6 +157,7 @@ public class ClienteController {
     /**
      * Este es el metodo de envio del formulario
      **/
+    @Secured("ROLE_ADMIN")
     @RequestMapping(value = "/form", method = RequestMethod.POST) /*Aca si falla la validacion la url se cambia al path del post*/
     public String guardar(@Valid @ModelAttribute("cliente") Cliente cliente, BindingResult result,
                           @RequestParam("file") MultipartFile foto, Model model, RedirectAttributes redirect, SessionStatus status) {
@@ -208,6 +213,7 @@ public class ClienteController {
     /**
      * Metodo para ver el Detalle del cliente
      **/
+    @Secured("ROLE_USER")
     @GetMapping(value = "/ver/{id}")
     public String ver(@PathVariable Long id, Map<String, Object> model, RedirectAttributes flash) {
         /*{ cliente.id }*/
@@ -236,6 +242,7 @@ public class ClienteController {
      * Otro metodo de obtener imagenes , el /upload/ hace referencia al src del img en el ver
      **/
 
+    @Secured("ROLE_USER")
     @GetMapping(value = "/upload/{filename:.+}")
     public ResponseEntity<Resource> buscarImagen(@PathVariable String filename) {
         /*Path pathfoto = Paths.get("uploads").resolve(filename).toAbsolutePath();
