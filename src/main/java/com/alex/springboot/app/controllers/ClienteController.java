@@ -17,6 +17,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -120,7 +121,8 @@ public class ClienteController {
     /**
      * Este metodo es para Editar
      **/
-    @Secured("ROLE_ADMIN")
+    //@Secured("ROLE_ADMIN")
+    @PreAuthorize("hasRole('ROLE_ADMIN')")
     @RequestMapping(value = "/form/{id}")
     public String editar(@PathVariable(value = "id") Long id, Map<String, Object> model, RedirectAttributes redirect) {
         Cliente cliente = null;
@@ -213,7 +215,8 @@ public class ClienteController {
     /**
      * Metodo para ver el Detalle del cliente
      **/
-    @Secured("ROLE_USER")
+    //@Secured("ROLE_USER")
+    @PreAuthorize("hasAnyRole('ROLE_USER','ROLE_ADMIN')")
     @GetMapping(value = "/ver/{id}")
     public String ver(@PathVariable Long id, Map<String, Object> model, RedirectAttributes flash) {
         /*{ cliente.id }*/
@@ -241,8 +244,7 @@ public class ClienteController {
     /**
      * Otro metodo de obtener imagenes , el /upload/ hace referencia al src del img en el ver
      **/
-
-    @Secured("ROLE_USER")
+    @Secured({"ROLE_USER"})
     @GetMapping(value = "/upload/{filename:.+}")
     public ResponseEntity<Resource> buscarImagen(@PathVariable String filename) {
         /*Path pathfoto = Paths.get("uploads").resolve(filename).toAbsolutePath();
@@ -268,6 +270,7 @@ public class ClienteController {
                         "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+
 
     public boolean hasRole(String role){
         SecurityContext context = SecurityContextHolder.getContext();
