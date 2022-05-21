@@ -5,6 +5,8 @@ import com.alex.springboot.app.models.entity.ItemFactura;
 import com.alex.springboot.app.models.services.IClienteService;
 import com.alex.springboot.app.models.services.IUploadFileService;
 import com.alex.springboot.app.util.paginator.PageRender;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
@@ -14,6 +16,12 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContext;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.web.servletapi.SecurityContextHolderAwareRequestWrapper;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -23,6 +31,7 @@ import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
 import java.io.File;
@@ -31,6 +40,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Collection;
 import java.util.Date;
 import java.util.Map;
 import java.util.UUID;
@@ -38,6 +48,7 @@ import java.util.UUID;
 @Controller
 @SessionAttributes("cliente")
 public class ClienteController {
+    private final Logger log= LoggerFactory.getLogger(getClass());
     /*@Autowired
     @Qualifier("ClienteDaoImplement")
     private IClienteDao iClienteDao;*/
@@ -46,8 +57,33 @@ public class ClienteController {
     private IClienteService iClienteService;
     @Autowired
     IUploadFileService fileService;
+
     @RequestMapping(value = {"/listar","/"}, method = RequestMethod.GET)
-    public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model, HttpServletResponse redirect, RedirectAttributes redirectAttributes) {
+    public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model, Authentication authentication, HttpServletRequest request) {
+        Authentication auth= SecurityContextHolder.getContext().getAuthentication();
+        if(authentication != null && auth != null){
+            log.info("Has sido autenticado con el username : ".concat(authentication.getName()));
+            log.info("SecurityContextHolder.getContext().getAuthentication() : ".concat(auth.getName()));
+        }
+        hasRole("anonymousUser");
+        if(hasRole("ROLE_ADMIN")){
+            log.info("Hola {".concat(auth.getName()).concat("} tienes acceso ADMIN"));
+        }else {
+            log.info("Hola ->"+auth.getPrincipal().toString()+" no tienes acceso");
+        }
+        // 2da Forma de validadr Roles
+        SecurityContextHolderAwareRequestWrapper securityContext=new SecurityContextHolderAwareRequestWrapper(request,"ROLE_");
+        if (securityContext.isUserInRole("ADMIN")){
+            log.info("~~SecurityContextHolder ".concat(auth.getName()).concat(" tienes acceso ADMIN"));
+        }else{
+            log.info("▼SecurityContextHolder ->"+auth.getPrincipal().toString()+" no tienes acceso");
+        }
+        //3ra Forma de Validar Roles
+        if (securityContext.isUserInRole("ROLE_ADMIN")){
+            log.info("~~HttpServletRequest ".concat(auth.getName()).concat(" tienes acceso ADMIN"));
+        }else{
+            log.info("▼HttpServletRequest ->"+auth.getPrincipal().toString()+" no tienes acceso");
+        }
         Pageable pageRequest = PageRequest.of(page, 4); //(pag-actual , sizexpag)
         Page<Cliente> clientesPage = iClienteService.findAll(pageRequest); //en el find old carga el page con la bd
         System.out.println("totalPag: " + clientesPage.getTotalPages() + "size: " + clientesPage.getSize() + "prev: " + clientesPage.hasPrevious());
@@ -56,8 +92,9 @@ public class ClienteController {
         model.addAttribute("clientes", clientesPage);
         /* iClienteService.auto_incremental();*/
         //model.addAttribute("clientes", iClienteService.findAll());
+        //String prueba = model.asMap().get("prueba") != null ? (String) model.asMap().get("prueba") :"IS NULL";
         String prueba = (String) model.asMap().get("prueba");
-        System.out.println(prueba);
+        System.out.println("PRUEBA -> " + prueba);
         model.addAttribute("prueba", prueba);
         model.addAttribute("titulo", "Listado de Clientes");
         return "listar";
@@ -224,6 +261,31 @@ public class ClienteController {
                         "attachment; filename=\"" + resource.getFilename() + "\"")
                 .body(resource);
     }
+
+    public boolean hasRole(String role){
+        SecurityContext context = SecurityContextHolder.getContext();
+        if(context == null){
+            System.out.println("context == null");
+            return false;
+        }
+        Authentication authentication=context.getAuthentication();
+        if (authentication == null){
+            System.out.println("authentication == null");
+            return false;
+        }
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        //Toda clase Rol o que representa un rol es spring security tiene que implementar la interfaz GrantedAuthority
+        for (GrantedAuthority authoritie:authorities) {
+            if(role.equals(authoritie.getAuthority())){
+                log.info("Hola usuario ".concat(authentication.getName())
+                        .concat(" your role is :").concat(authoritie.getAuthority()));
+                return true;
+            }
+           //return authorities.contains(new SimpleGrantedAuthority(role));
+        }
+        return false;
+    }
+
 
 }
 

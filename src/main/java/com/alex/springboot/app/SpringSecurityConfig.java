@@ -1,5 +1,6 @@
 package com.alex.springboot.app;
 
+import com.alex.springboot.app.auth.handler.LoginSuccessHandler;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -21,13 +22,19 @@ public class SpringSecurityConfig  extends WebSecurityConfigurerAdapter{
         return new BCryptPasswordEncoder();
     }
 
+
+    private LoginSuccessHandler successHandler;
+
+    @Autowired
+    public void setLoginSuccessHandler(LoginSuccessHandler successHandler){
+        this.successHandler=successHandler;
+    }
+
     @Autowired
     public void configurerGlobal(AuthenticationManagerBuilder builder) throws Exception{
-
         PasswordEncoder encoder = passwordEncoder();
         //User.UserBuilder users=User.builder().passwordEncoder(pass -> {return encoder.encode(pass)});
         User.UserBuilder users=User.builder().passwordEncoder(encoder::encode);
-
         builder.inMemoryAuthentication()
                 .withUser(users.username("admin").password("12345").roles("ADMIN","USER"))
                 .withUser(users.username("alexander").password("123").roles("USER"));
@@ -43,7 +50,9 @@ public class SpringSecurityConfig  extends WebSecurityConfigurerAdapter{
                 .antMatchers("/factura/**").hasAnyRole("ADMIN")
                 .anyRequest().authenticated()
                 .and()
-                    .formLogin().loginPage("/login")
+                    .formLogin()
+                            .successHandler(successHandler)
+                            .loginPage("/login")
                     .permitAll()
                 .and()
                 .logout().permitAll()

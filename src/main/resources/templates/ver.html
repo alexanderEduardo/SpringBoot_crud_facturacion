@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" xmlns:th="https://www.thymeleaf.org">
+<html lang="en" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/extras/spring-security">
 <head th:replace="Layout/layout :: head">>
 </head>
 <body>
@@ -7,7 +7,7 @@
     <div class="container py-4">
         <div class="card-header" th:text="${titulo}"></div>
         <div class="card-body">
-            <h4 class="card-title">
+            <h4 sec:authorize="hasRole('ROLE_ADMIN')" class="card-title">
                 <a class="btn btn-primary btn-xs" th:href="@{'/factura/form/'+${cliente.id}}">Crear Factura</a>
                 <a class="btn btn-dark btn-xs" th:href="@{'/form/'+${cliente.id}}">Editar Cliente</a>
             </h4>
@@ -27,8 +27,8 @@
                     <th>descripción</th>
                     <th>fecha</th>
                     <th>total</th>
-                    <th>ver</th>
-                    <th>eliminar</th>
+                    <th sec:authorize="hasRole('ROLE_ADMIN')">ver</th>
+                    <th sec:authorize="hasRole('ROLE_ADMIN')">eliminar</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -39,8 +39,8 @@
                         <td th:text="${factura.descripcion}"></td>
                         <td th:text="${factura.createAt}"></td>
                         <td th:text="${factura.total}"></td>
-                        <td><a class="btn btn-primary btn-xs" th:href="@{'/factura/ver/'+${factura.id}}">Detalle</a></td>
-                        <td><a th:href="@{'/factura/eliminar/'+${factura.id}}" onclick="return confirm('Estas seguro de eliminar esta factura?')" class="btn btn-danger">Eliminar</a></td>
+                        <td sec:authorize="hasRole('ROLE_ADMIN')"><a class="btn btn-primary btn-xs" th:href="@{'/factura/ver/'+${factura.id}}">Detalle</a></td>
+                        <td sec:authorize="hasRole('ROLE_ADMIN')"><a th:href="@{'/factura/eliminar/'+${factura.id}}" onclick="return confirm('Estas seguro de eliminar esta factura?')" class="btn btn-danger">Eliminar</a></td>
                         <!--<td th:text="${factura.items.get(0).getProducto().getNombre()}"></td>-->
                         <!--<td th:text="${factura.items.get(0).getCantidad()}"></td>-->
                     </tr>
