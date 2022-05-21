@@ -13,6 +13,8 @@ import org.springframework.security.core.userdetails.User;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import javax.sql.DataSource;
+
 @EnableGlobalMethodSecurity(securedEnabled = true,prePostEnabled = true)
 @Configuration
 //@EnableWebSecurity
@@ -25,7 +27,8 @@ public class SpringSecurityConfig  extends WebSecurityConfigurerAdapter{
 
 
     private LoginSuccessHandler successHandler;
-
+    @Autowired
+    private DataSource dataSource;
     @Autowired
     public void setLoginSuccessHandler(LoginSuccessHandler successHandler){
         this.successHandler=successHandler;
@@ -33,13 +36,17 @@ public class SpringSecurityConfig  extends WebSecurityConfigurerAdapter{
 
     @Autowired
     public void configurerGlobal(AuthenticationManagerBuilder builder) throws Exception{
-
-        //User.UserBuilder users=User.builder().passwordEncoder(pass -> {return encoder.encode(pass)});
         PasswordEncoder encoder = passwordEncoder();
-        User.UserBuilder users=User.builder().passwordEncoder(encoder::encode);
+        builder.jdbcAuthentication()
+                .dataSource(dataSource).passwordEncoder(encoder)
+                .usersByUsernameQuery("select username,password,enabled from users where username=?")
+                .authoritiesByUsernameQuery("select u.username,a.authority from authorities a inner join users u on u.id=a.user_id where u.username = ?")
+                ;
+        //User.UserBuilder users=User.builder().passwordEncoder(pass -> {return encoder.encode(pass)});
+        /*User.UserBuilder users=User.builder().passwordEncoder(encoder::encode);
         builder.inMemoryAuthentication()
                 .withUser(users.username("admin").password("12345").roles("ADMIN","USER"))
-                .withUser(users.username("alexander").password("123").roles("USER"));
+                .withUser(users.username("alexander").password("123").roles("USER"));*/
     }
 
     @Override
