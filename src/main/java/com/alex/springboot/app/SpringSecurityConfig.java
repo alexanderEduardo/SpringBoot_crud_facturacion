@@ -1,6 +1,7 @@
 package com.alex.springboot.app;
 
 import com.alex.springboot.app.auth.handler.LoginSuccessHandler;
+import com.alex.springboot.app.models.services.JpaUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,22 +26,27 @@ public class SpringSecurityConfig  extends WebSecurityConfigurerAdapter{
         return new BCryptPasswordEncoder();
     }
 
-
     private LoginSuccessHandler successHandler;
-    @Autowired
-    private DataSource dataSource;
     @Autowired
     public void setLoginSuccessHandler(LoginSuccessHandler successHandler){
         this.successHandler=successHandler;
     }
 
     @Autowired
+    private DataSource dataSource;
+
+    @Autowired
+    JpaUserDetailsService userDetailsService;
+
+    @Autowired
     public void configurerGlobal(AuthenticationManagerBuilder builder) throws Exception{
         PasswordEncoder encoder = passwordEncoder();
-        builder.jdbcAuthentication()
-                .dataSource(dataSource).passwordEncoder(encoder)
-                .usersByUsernameQuery("select username,password,enabled from users where username=?")
-                .authoritiesByUsernameQuery("select u.username,a.authority from authorities a inner join users u on u.id=a.user_id where u.username = ?")
+        /*builder.jdbcAuthentication()*/
+        builder.userDetailsService(userDetailsService)
+                /*.dataSource(dataSource)*/
+                .passwordEncoder(encoder)
+                /*.usersByUsernameQuery("select username,password,enabled from users where username=?")*/
+                /*.authoritiesByUsernameQuery("select u.username,a.authority from authorities a inner join users u on u.id=a.user_id where u.username = ?")*/
                 ;
         //User.UserBuilder users=User.builder().passwordEncoder(pass -> {return encoder.encode(pass)});
         /*User.UserBuilder users=User.builder().passwordEncoder(encoder::encode);
