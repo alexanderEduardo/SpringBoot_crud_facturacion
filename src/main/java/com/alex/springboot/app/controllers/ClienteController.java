@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
+import org.springframework.context.MessageSource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -32,7 +33,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
-
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -42,15 +42,14 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
-import java.util.Collection;
-import java.util.Date;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 
 @Controller
 @SessionAttributes("cliente")
 public class ClienteController {
     private final Logger log= LoggerFactory.getLogger(getClass());
+    @Autowired
+    private MessageSource messageSource;
     /*@Autowired
     @Qualifier("ClienteDaoImplement")
     private IClienteDao iClienteDao;*/
@@ -61,7 +60,8 @@ public class ClienteController {
     IUploadFileService fileService;
 
     @RequestMapping(value = {"/listar","/"}, method = RequestMethod.GET)
-    public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model, Authentication authentication, HttpServletRequest request) {
+    public String listar(@RequestParam(name = "page", defaultValue = "0") int page, Model model,
+                         Authentication authentication, HttpServletRequest request, Locale locale) {
         Authentication auth= SecurityContextHolder.getContext().getAuthentication();
         if(authentication != null && auth != null){
             log.info("Has sido autenticado con el username : ".concat(authentication.getName()));
@@ -98,7 +98,8 @@ public class ClienteController {
         String prueba = (String) model.asMap().get("prueba");
         System.out.println("PRUEBA -> " + prueba);
         model.addAttribute("prueba", prueba);
-        model.addAttribute("titulo", "Listado de Clientes");
+        log.info("El pais es : "+locale.getCountry()+" y el Language es: "+locale.getLanguage());
+        model.addAttribute("titulo", messageSource.getMessage("text.cliente.listar.titulo",null,locale));
         return "listar";
     }
 
