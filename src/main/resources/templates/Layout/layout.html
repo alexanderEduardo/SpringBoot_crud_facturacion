@@ -49,6 +49,16 @@
             <li class="nav-item mx-1"><a class="btn btn-outline-success" th:href="@{/locale(lang=es_ES)}">ES</a></li> <!--href="?lang=es_ES"-->
             <li class="nav-item mx-1"><a class="btn btn-outline-success" th:href="@{/locale(lang=en_US)}">EN</a></li> <!--href="?lang=en _US">EN-->
             <li class="nav-item mx-1"><a class="btn btn-outline-success" th:href="@{/locale(lang=fr_FRA)}">FRA</a></li>   <!--href="?lang=fr_FRA"-->
+            <li class="nav-item dropdown show mx-2">
+                <a class="btn btn-outline-primary dropdown-toggle" href="#" role="button" id="dropdownLanguage" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <span th:text="#{text.locale.language}"></span>
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                        <a class="dropdown-item" th:href="@{/locale(lang=es_ES)}" th:text="#{text.locale.es}">ES</a>
+                        <a class="dropdown-item" th:href="@{/locale(lang=en_US)}" th:text="#{text.locale.en}">EN</a>
+                        <a class="dropdown-item" th:href="@{/locale(lang=fr_FRA)}" th:text="#{text.locale.fr}">FRA</a>
+                    </div>
+                </a>
+            </li>
         </ul>
     </div>
 </nav>
