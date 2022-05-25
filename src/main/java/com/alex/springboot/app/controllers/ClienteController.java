@@ -171,7 +171,7 @@ public class ClienteController {
             return "form"; /* envia el objeto cliente cargado implicitamente*/
         }
         System.out.println("*ID  : "+cliente.getId());
-        System.out.println("*FOTO :"+cliente.getFoto()+"--length: "+cliente.getFoto().length() );
+        System.out.println("*FOTO :"+cliente.getFoto());
         System.out.println(" Param ... FILE:"+foto.isEmpty());
         if (!foto.isEmpty()) {
             System.out.println("-------!foto.isEmpty()-------");
@@ -199,7 +199,7 @@ public class ClienteController {
             } catch (Exception e) {
                 System.out.println(e);
             }
-        }else{//este else sirve para borrar la foto si no se coloca en el formulario
+        }else if(cliente.getId()!=null){//este else sirve para borrar la foto si no se coloca en el formulario
             fileService.deleteFile(cliente.getFoto());
             cliente.setFoto("");
         }
