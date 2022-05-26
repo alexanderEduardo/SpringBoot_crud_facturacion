@@ -1,5 +1,7 @@
 package com.alex.springboot.app.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
 import javax.validation.constraints.NotEmpty;
 import javax.xml.bind.annotation.XmlTransient;
@@ -79,7 +81,7 @@ public class Factura implements Serializable {
     public void setCreateAt(Date createAt) {
         this.createAt = createAt;
     }
-    @XmlTransient
+    @XmlTransient @JsonIgnore
     public Cliente getCliente() {
         return cliente;
     }

@@ -86,6 +86,7 @@ public class ClienteController {
         }else{
             log.info("▼HttpServletRequest ->"+auth.getPrincipal().toString()+" no tienes acceso");
         }
+        model.addAttribute("pageInt",page);
         Pageable pageRequest = PageRequest.of(page, 4); //(pag-actual , sizexpag)
         Page<Cliente> clientesPage = iClienteService.findAll(pageRequest); //en el find old carga el page con la bd
         System.out.println("totalPag: " + clientesPage.getTotalPages() + "size: " + clientesPage.getSize() + "prev: " + clientesPage.hasPrevious());

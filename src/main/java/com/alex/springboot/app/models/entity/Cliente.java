@@ -1,5 +1,6 @@
 package com.alex.springboot.app.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import org.springframework.format.annotation.DateTimeFormat;
 import javax.persistence.*;
 import java.io.Serializable;
@@ -24,6 +25,7 @@ public class Cliente implements Serializable {
 
     @Column(name = "create_at") @NotNull /*@DateTimeFormat(pattern = "yyyy-MM-dd")*/
     @Temporal(TemporalType.DATE) //se guarda con formato fecha en la bd
+    @JsonFormat(pattern = "yyyy-MM-dd HHHH:mm:ss")
     private Date createAt;
 
     @NotEmpty @Email

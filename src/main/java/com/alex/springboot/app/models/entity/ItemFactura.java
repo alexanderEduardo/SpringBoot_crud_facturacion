@@ -1,5 +1,8 @@
 package com.alex.springboot.app.models.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.io.Serializable;
 
@@ -15,6 +18,7 @@ public class ItemFactura implements Serializable {
     //Como estamos mapeando producto va crear el campo producto_id en la tabla facturas_item aunque nunca esta demas especificar con JoinColumn
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "producto_id") //entonces la llave foranea en la tabla facturas_items seria prodcuto_id
+    @JsonIgnoreProperties({"hibernateLazyInitializer","handler"})
     private Producto producto;
 
     public Double calcularImporte(){
