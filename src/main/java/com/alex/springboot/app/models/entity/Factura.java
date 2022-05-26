@@ -32,7 +32,6 @@ public class Factura implements Serializable {
     // puede tener un solo cliente ,
     @ManyToOne(fetch = FetchType.LAZY)
     //@JoinColumn(name = "cliente_id") // se podria poner esto
-    @JsonBackReference
     private Cliente cliente;
 
     //Una Factura esta relacionada a muchos item Factura || cascade: si eliminamos una factura entoces tmb se eleminaran sus hijos
@@ -83,7 +82,7 @@ public class Factura implements Serializable {
     public void setCreateAt(Date createAt) {
         this.createAt = createAt;
     }
-    @XmlTransient
+    @XmlTransient @JsonIgnore
     public Cliente getCliente() {
         return cliente;
     }

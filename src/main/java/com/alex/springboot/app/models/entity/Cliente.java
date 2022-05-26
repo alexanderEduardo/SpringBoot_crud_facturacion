@@ -33,7 +33,6 @@ public class Cliente implements Serializable {
     private String email;
     //El ONE hace referencia a cliente , es decir , un cliente puede tener muchas Facturas!
     @OneToMany(mappedBy = "cliente",fetch = FetchType.LAZY,cascade = CascadeType.ALL,orphanRemoval = true)
-    @JsonManagedReference
     private List<Factura> facturas;
     private String foto;
 
