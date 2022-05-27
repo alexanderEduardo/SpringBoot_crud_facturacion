@@ -5,6 +5,7 @@ import com.alex.springboot.app.models.entity.ItemFactura;
 import com.alex.springboot.app.models.services.IClienteService;
 import com.alex.springboot.app.models.services.IUploadFileService;
 import com.alex.springboot.app.util.paginator.PageRender;
+import com.alex.springboot.app.view.xml.ClienteList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -102,6 +103,12 @@ public class ClienteController {
         log.info("El pais es : "+locale.getCountry()+" y el Language es: "+locale.getLanguage());
         model.addAttribute("titulo", messageSource.getMessage("text.cliente.listar.titulo",null,locale));
         return "listar";
+    }
+
+    @GetMapping("listar-rest")
+    public @ResponseBody ClienteList listarRest(){
+        List<Cliente> clientes=iClienteService.findAll();
+        return new ClienteList(clientes);
     }
 
     @InitBinder

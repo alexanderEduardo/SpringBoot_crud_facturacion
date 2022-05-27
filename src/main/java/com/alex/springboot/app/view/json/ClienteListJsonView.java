@@ -13,7 +13,6 @@ public class ClienteListJsonView extends MappingJackson2JsonView {
     @Override
     protected Object filterModel(Map<String, Object> model) {
         Page<Cliente> clientes= (Page<Cliente>) model.get("clientes");
-
         model.remove("clientes");
         model.remove("page");
         model.remove("prueba");
